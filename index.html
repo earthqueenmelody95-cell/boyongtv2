@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👻 Aswang Horror Merch</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@400;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        background: #111;
+        color: white;
+    }
+
+    /* ================= HEADER ================= */
+
+    header {
+        background: #000;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid red;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
+
+    header h2 {
+        font-family: 'Creepster', cursive;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+        color: red;
+        text-shadow: 0 0 10px rgba(255,0,0,0.5);
+    }
+
+    .cart-button {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: bold;
+        background: #111;
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid red;
+        transition: 0.3s;
+        color: white;
+        font-size: 0.95rem;
+    }
+
+    .cart-button:hover { box-shadow: 0 0 15px red; background: #1a0000; }
+
+    .cart-pulse { animation: pulse 0.4s ease; }
+
+    @keyframes pulse {
+        0%   { transform: scale(1); }
+        50%  { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    /* ================= PRODUCTS ================= */
+
+    .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .product {
+        background: #1a1a1a;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(255,0,0,0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product:hover { transform: translateY(-4px); box-shadow: 0 0 20px rgba(255,0,0,0.5); }
+
+    .product img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #333;
+        cursor: zoom-in;
+        transition: opacity 0.2s;
+    }
+
+    .product img:hover { opacity: 0.85; }
+
+    .product h3 { margin: 10px 0 5px; }
+    .product p  { color: #ff6666; font-size: 1rem; margin-bottom: 8px; }
+
+    button {
+        padding: 8px 12px;
+        margin-top: 8px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .add-btn         { background: red; color: white; }
+    .add-btn:hover   { background: #cc0000; }
+    .close-btn       { background: #444; color: white; }
+    .close-btn:hover { background: #555; }
+    .copy-btn        { background: #0f0; color: black; }
+    .copy-btn:hover  { background: #00cc00; }
+
+    .qty-btn {
+        background: #222;
+        color: red;
+        border: 1px solid red;
+        padding: 4px 10px;
+        font-weight: bold;
+        border-radius: 4px;
+        margin-top: 0;
+    }
+
+    .qty-btn:hover { background: red; color: white; }
+
+    /* ================= LIGHTBOX ================= */
+
+    #lightbox {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        cursor: zoom-out;
+    }
+
+    #lightbox.active { opacity: 1; pointer-events: all; }
+
+    #lightbox img {
+        max-width: 90vw;
+        max-height: 85vh;
+        border-radius: 12px;
+        border: 2px solid red;
+        box-shadow: 0 0 40px rgba(255,0,0,0.6);
+        transform: scale(0.85);
+        transition: transform 0.3s ease;
+        cursor: default;
+        margin-top: 0;
+    }
+
+    #lightbox.active img { transform: scale(1); }
+
+    #lightboxCaption {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.75);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 1rem;
+        border: 1px solid red;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+
+    #lightboxClose {
+        position: absolute;
+        top: 20px; right: 28px;
+        font-size: 1.4rem;
+        color: white;
+        cursor: pointer;
+        background: rgba(255,0,0,0.75);
+        border: none;
+        border-radius: 50%;
+        width: 44px; height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        z-index: 2001;
+        padding: 0;
+        margin-top: 0;
+    }
+
+    #lightboxClose:hover { background: red; }
+
+    /* ================= CART DRAWER ================= */
+
+    #cartDrawer {
+        position: fixed;
+        right: -420px; top: 0;
+        width: 380px; height: 100%;
+        background: #1a1a1a;
+        box-shadow: -2px 0 20px rgba(255,0,0,0.5);
+        padding: 20px;
+        transition: 0.4s ease;
+        overflow-y: auto;
+        z-index: 1001;
+    }
+
+    #cartDrawer.open { right: 0; }
+
+    #overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        z-index: 1000;
+        cursor: pointer;
+    }
+
+    #overlay.show { display: block; }
+
+    .cart-item-card {
+        background: #222;
+        border: 1px solid #3a0000;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .cart-item-card:last-child { margin-bottom: 0; }
+
+    .cart-item-name  { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
+    .cart-item-price { color: #ff6666; font-size: 0.9rem; margin-bottom: 8px; }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .totals-block {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .totals-block .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 0;
+    }
+
+    .totals-block .grand-total {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: white;
+        border-top: 1px solid #444;
+        margin-top: 6px;
+        padding-top: 6px;
+    }
+
+    .empty-cart {
+        text-align: center;
+        color: #555;
+        padding: 30px 0;
+        font-style: italic;
+    }
+
+    .checkout-section h4 {
+        margin: 16px 0 8px;
+        color: #ff6666;
+        border-bottom: 1px solid #3a0000;
+        padding-bottom: 4px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        background: #333;
+        border: 1px solid red;
+        border-radius: 4px;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9rem;
+    }
+
+    input[type="text"]::placeholder { color: #888; }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #ff6666;
+        box-shadow: 0 0 8px rgba(255,0,0,0.3);
+    }
+
+    .summary-box {
+        background: black;
+        color: #0f0;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        margin-top: 10px;
+        border: 1px solid #0f0;
+    }
+
+    .qr { width: 200px; margin-top: 10px; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+    <h2>👻 Aswang Horror Merch</h2>
+    <div onclick="toggleCart()" class="cart-button" id="cartBtn">
+        🛒 View Cart (<span id="cartCount">0</span>)
+    </div>
+</header>
+
+<div class="products" id="productList"></div>
+
+<!-- ================= LIGHTBOX — clicking an image opens it enlarged ================= -->
+<div id="lightbox" onclick="closeLightbox(event)">
+    <button id="lightboxClose" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <div id="lightboxCaption"></div>
+</div>
+
+<div id="overlay" onclick="toggleCart()"></div>
+
+<div id="cartDrawer">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3>🛒 Your Cart</h3>
+        <button class="close-btn" onclick="toggleCart()">✖ Close</button>
+    </div>
+
+    <div id="cartItems"><p class="empty-cart">Your cart is empty.</p></div>
+
+    <div class="totals-block" id="totalsBlock" style="display:none;">
+        <div class="row"><span>Subtotal</span><span>₱<span id="subtotalPrice">0</span></span></div>
+        <div class="row"><span id="shippingLabel">Shipping</span><span id="shippingCost">₱100</span></div>
+        <div class="row grand-total"><span>Total</span><span>₱<span id="totalPrice">0</span></span></div>
+    </div>
+
+    <div id="shippingInfo" style="display:none;"></div>
+
+    <br>
+    <button class="close-btn" onclick="toggleCart()" style="width:100%;">← Continue Shopping</button>
+
+    <div class="checkout-section">
+        <h4>📋 Order Information</h4>
+        <input type="text" id="name"     placeholder="Full Name">
+        <input type="text" id="contact"  placeholder="Contact Number">
+        <input type="text" id="street"   placeholder="Street / Barangay">
+        <input type="text" id="city"     placeholder="City / Municipality">
+        <input type="text" id="province" placeholder="Province">
+
+        <button class="add-btn" onclick="showSummary()" style="width:100%; margin-top:12px; padding:10px; font-size:1rem;">
+            ✅ Confirm Order
+        </button>
+    </div>
+
+    <div id="orderSummary" style="display:none; margin-top:20px;">
+        <h3>📄 Order Summary</h3>
+        <div class="summary-box" id="summaryText"></div>
+        <button class="copy-btn" onclick="copySummary()" style="width:100%; margin-top:10px; padding:10px;">
+            📋 Copy Order Details
+        </button>
+
+        <h4 style="margin-top:16px; color:#ff6666;">💳 Payment Instructions</h4>
+        <p style="font-size:0.9rem; line-height:1.6; color:#ccc; margin-top:8px;">
+            1. Send the exact amount via GCash QR below.<br>
+            2. Screenshot your payment receipt.<br>
+            3. Email the screenshot + order details to:
+        </p>
+        <!-- 🔴 REPLACE WITH YOUR REAL EMAIL -->
+        <strong style="color:#ff6666;">yourstore@email.com</strong>
+        <br><br>
+        <!-- 🔴 REPLACE WITH YOUR GCASH QR IMAGE URL -->
+        <img src="PASTE_FULL_QR_IMAGE_URL_HERE" class="qr" alt="GCash QR Code">
+    </div>
+
+</div>
+
+<script>
+
+/* ===============================
+   🔥 PRODUCT DATABASE
+   👉 ADD / EDIT YOUR MERCH HERE
+
+   HOW TO ADD A NEW PRODUCT:
+   1. Copy a product block below
+   2. Paste it after the last item
+   3. Put a comma before the opening {
+   4. Fill in the name, price, image
+
+   HOW TO GET A FREE IMAGE URL:
+   - Go to imgur.com or postimages.org
+   - Upload your product photo
+   - Copy the DIRECT link (ends in .jpg or .png)
+   - Paste it into the image: field
+================================ */
+
+const products = [
+
+    {
+        name:  "Aswang Shirt",
+        price: 599,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    },
+
+    {
+        name:  "Horror Cap",
+        price: 399,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    }
+
+    /*
+    🆕 COPY THIS BLOCK TO ADD A NEW ITEM (don't forget the comma!):
+
+    ,{
+        name:  "Aswang Hoodie",
+        price: 899,
+        image: "PASTE_FULL_IMAGE_URL_HERE"
+    }
+    */
+
+];
+
+/* ===============================
+   ⚙️ SHIPPING SETTINGS
+================================ */
+
+const SHIPPING_FEE      = 100;   // 🔴 Shipping fee in pesos
+const FREE_SHIPPING_QTY = 3;     // 🔴 Minimum items for free shipping
+
+let cart = [];
+
+/* ================= RENDER PRODUCTS ================= */
+
+function loadProducts() {
+    const container = document.getElementById("productList");
+    container.innerHTML = "";
+
+    products.forEach(function(product) {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML =
+            "<img src='" + product.image + "' " +
+                "alt='" + product.name + "' " +
+                "title='🔍 Click image to enlarge' " +
+                "onerror=\"this.src='https://via.placeholder.com/220x180/1a1a1a/red?text=No+Image'\" " +
+                "onclick=\"openLightbox('" + product.image + "', '" + product.name + "')\">" +
+            "<h3>" + product.name + "</h3>" +
+            "<p>₱" + product.price + "</p>" +
+            "<button class='add-btn' onclick=\"addToCart('" + product.name + "', " + product.price + ")\">🛒 Add to Cart</button>";
+        container.appendChild(div);
+    });
+}
+
+/* ================= LIGHTBOX ================= */
+
+function openLightbox(src, caption) {
+    document.getElementById("lightboxImg").src             = src;
+    document.getElementById("lightboxCaption").textContent = caption;
+    document.getElementById("lightbox").classList.add("active");
+    document.body.style.overflow = "hidden"; // prevent background scroll
+}
+
+function closeLightbox(event) {
+    // Clicking the enlarged image itself won't close — only the dark background or X button
+    if (event && event.target === document.getElementById("lightboxImg")) return;
+    document.getElementById("lightbox").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+// Press Escape key to close lightbox
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closeLightbox();
+});
+
+/* ================= CART TOGGLE ================= */
+
+function toggleCart() {
+    document.getElementById("cartDrawer").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+/* ================= ADD TO CART ================= */
+
+function addToCart(name, price) {
+    let item = cart.find(function(p) { return p.name === name; });
+    if (item) { item.quantity++; }
+    else       { cart.push({ name: name, price: price, quantity: 1 }); }
+
+    updateCart();
+
+    const btn = document.getElementById("cartBtn");
+    btn.classList.add("cart-pulse");
+    setTimeout(function() { btn.classList.remove("cart-pulse"); }, 400);
+}
+
+/* ================= UPDATE CART ================= */
+
+function updateCart() {
+    const cartDiv      = document.getElementById("cartItems");
+    const totalsBlock  = document.getElementById("totalsBlock");
+    const shippingInfo = document.getElementById("shippingInfo");
+
+    let subtotal = 0;
+    let totalQty = 0;
+
+    cartDiv.innerHTML = "";
+
+    if (cart.length === 0) {
+        cartDiv.innerHTML          = "<p class='empty-cart'>Your cart is empty.</p>";
+        totalsBlock.style.display  = "none";
+        shippingInfo.style.display = "none";
+        document.getElementById("cartCount").textContent = 0;
+        return;
+    }
+
+    cart.forEach(function(item, index) {
+        subtotal += item.price * item.quantity;
+        totalQty += item.quantity;
+
+        const card = document.createElement("div");
+        card.className = "cart-item-card";
+        card.innerHTML =
+            "<div class='cart-item-name'>" + item.name + "</div>" +
+            "<div class='cart-item-price'>₱" + item.price + " each &nbsp;|&nbsp; Line total: ₱" + (item.price * item.quantity) + "</div>" +
+            "<div class='cart-item-controls'>" +
+                "<button class='qty-btn' onclick='decreaseQty(" + index + ")'>−</button>" +
+                "<span style='min-width:24px; text-align:center; font-weight:bold;'>" + item.quantity + "</span>" +
+                "<button class='qty-btn' onclick='increaseQty(" + index + ")'>+</button>" +
+                "<button class='close-btn' onclick='removeItem(" + index + ")' style='margin-left:auto; font-size:0.8rem; padding:4px 8px;'>🗑 Remove</button>" +
+            "</div>";
+        cartDiv.appendChild(card);
+    });
+
+    const isFreeShipping = totalQty >= FREE_SHIPPING_QTY;
+    const shipping       = isFreeShipping ? 0 : SHIPPING_FEE;
+    const total          = subtotal + shipping;
+
+    document.getElementById("subtotalPrice").textContent = subtotal;
+    document.getElementById("shippingLabel").textContent = "Shipping" + (isFreeShipping ? " 🎉 FREE" : "");
+    document.getElementById("shippingCost").textContent  = isFreeShipping ? "FREE" : "₱" + SHIPPING_FEE;
+    document.getElementById("totalPrice").textContent    = total;
+    document.getElementById("cartCount").textContent     = totalQty;
+
+    totalsBlock.style.display  = "block";
+    shippingInfo.style.display = "block";
+
+    if (isFreeShipping) {
+        shippingInfo.innerHTML     = "🎉 You qualify for <strong>FREE shipping</strong>! (3+ items)";
+        shippingInfo.style.cssText = "background:#001a00; border:1px solid #0f0; border-radius:6px; padding:8px 12px; font-size:0.85rem; color:#0f0; margin-top:10px; text-align:center; display:block;";
+    } else {
+        const remaining = FREE_SHIPPING_QTY - totalQty;
+        shippingInfo.innerHTML     = "🚚 Add <strong>" + remaining + " more item" + (remaining > 1 ? "s" : "") + "</strong> for FREE shipping!";
+        shippingInfo.style.cssText = "background:#1a1a00; border:1px solid gold; border-radius:6px; padding:8px 12px; font-size:0.85rem; color:gold; margin-top:10px; text-align:center; display:block;";
+    }
+}
+
+function increaseQty(index) { cart[index].quantity++; updateCart(); }
+
+function decreaseQty(index) {
+    if (cart[index].quantity > 1) { cart[index].quantity--; updateCart(); }
+}
+
+function removeItem(index) { cart.splice(index, 1); updateCart(); }
+
+/* ================= CHECKOUT SUMMARY ================= */
+
+function showSummary() {
+    if (cart.length === 0) { alert("Your cart is empty!"); return; }
+
+    const name     = document.getElementById("name").value.trim();
+    const contact  = document.getElementById("contact").value.trim();
+    const street   = document.getElementById("street").value.trim();
+    const city     = document.getElementById("city").value.trim();
+    const province = document.getElementById("province").value.trim();
+
+    if (!name || !contact || !street || !city || !province) {
+        alert("Please fill in all order information fields.");
+        return;
+    }
+
+    const totalQty       = cart.reduce(function(sum, i) { return sum + i.quantity; }, 0);
+    const isFreeShipping = totalQty >= FREE_SHIPPING_QTY;
+    const subtotal       = cart.reduce(function(sum, i) { return sum + i.price * i.quantity; }, 0);
+    const shipping       = isFreeShipping ? 0 : SHIPPING_FEE;
+    const total          = subtotal + shipping;
+
+    let text  = "===== ASWANG MERCH ORDER =====\n\n";
+    text += "Customer : " + name + "\n";
+    text += "Contact  : " + contact + "\n";
+    text += "Address  : " + street + ", " + city + ", " + province + "\n\n";
+    text += "Items:\n";
+
+    cart.forEach(function(item) {
+        text += "  - " + item.name + " (x" + item.quantity + ") = ₱" + (item.price * item.quantity) + "\n";
+    });
+
+    text += "\nSubtotal : ₱" + subtotal + "\n";
+    text += "Shipping : " + (isFreeShipping ? "FREE 🎉" : "₱" + SHIPPING_FEE) + "\n";
+    text += "TOTAL    : ₱" + total + "\n";
+    text += "==============================";
+
+    document.getElementById("summaryText").textContent   = text;
+    document.getElementById("orderSummary").style.display = "block";
+    document.getElementById("orderSummary").scrollIntoView({ behavior: "smooth" });
+}
+
+function copySummary() {
+    const text     = document.getElementById("summaryText").textContent;
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    alert("✅ Order details copied to clipboard!");
+}
+
+/* ================= INIT ================= */
+loadProducts();
+
+</script>
+</body>
+</html>
