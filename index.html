@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Katarungan Universe</title>
+<title>👻 KATARUNGAN UNIVERSE Merch</title>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@400;700&display=swap');
 
@@ -27,6 +27,15 @@
         position: sticky;
         top: 0;
         z-index: 999;
+    }
+
+    .header-logo {
+        height: 30px;
+        width: auto;
+        max-width: 280px;
+        object-fit: contain;
+        border-radius: 6px;
+        display: block;
     }
 
     header h2 {
@@ -317,7 +326,6 @@
 
 <header>
     <img src="https://i.imgur.com/fAG6su8.png" alt="KATARUNGAN UNIVERSE Merch" class="header-logo">
-    
     <div onclick="toggleCart()" class="cart-button" id="cartBtn">
         🛒 View Cart (<span id="cartCount">0</span>)
     </div>
@@ -598,7 +606,7 @@ function showSummary() {
     const shipping       = isFreeShipping ? 0 : SHIPPING_FEE;
     const total          = subtotal + shipping;
 
-    let text  = "===== KATARUNGAN UNIVERSE MERCH ORDER =====\n\n";
+    let text  = "===== ASWANG MERCH ORDER =====\n\n";
     text += "Customer : " + name + "\n";
     text += "Contact  : " + contact + "\n";
     text += "Address  : " + street + ", " + city + ", " + province + "\n\n";
