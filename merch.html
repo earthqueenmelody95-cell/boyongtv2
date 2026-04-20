@@ -709,8 +709,8 @@ function loadProducts() {
             "<img src='" + product.image + "' " +
                 "alt='" + product.name + "' " +
                 "title='🔍 Click image to enlarge' " +
-                "onerror="this.src='https://via.placeholder.com/220x180/1a1a1a/red?text=No+Image'" " +
-                "onclick="openLightbox('" + product.image + "', '" + product.name + "')">" +
+                "onerror=\"this.src='https://via.placeholder.com/220x180/1a1a1a/red?text=No+Image'\" " +
+                "onclick=\"openLightbox('" + product.image + "', '" + product.name + "')\">" +
             "<h3>" + product.name + "</h3>" +
             "<p>₱" + product.price + "</p>" +
             "<div class='size-selector' id='sizes-" + pIndex + "'>" + sizeBtns + "</div>" +
