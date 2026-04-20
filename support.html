@@ -491,6 +491,107 @@
         .letter-quote { font-size: 3.5rem; }
         .hero-title { font-size: 1.2rem; }
     }
+
+    /* ===== QR LIGHTBOX ===== */
+    #qrLightbox {
+        position: fixed; inset: 0;
+        z-index: 3000;
+        background: rgba(0,0,0,0.94);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 20px;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.3s ease;
+        padding: 20px;
+        cursor: zoom-out;
+    }
+
+    #qrLightbox.active { opacity: 1; pointer-events: all; }
+
+    .lb-img-wrap {
+        position: relative;
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 0 0 1px rgba(184,134,11,0.5), 0 20px 60px rgba(0,0,0,0.9);
+        transform: scale(0.88);
+        transition: transform 0.3s ease;
+        cursor: default;
+        max-width: 90vw;
+    }
+
+    #qrLightbox.active .lb-img-wrap { transform: scale(1); }
+
+    #lbImg {
+        display: block;
+        width: auto; height: auto;
+        max-width: min(380px, 80vw);
+        max-height: 70vh;
+        border-radius: 6px;
+    }
+
+    .lb-badge {
+        font-family: 'Cinzel', serif;
+        font-size: 0.65rem; letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        background: rgba(0,0,0,0.6);
+        border: 1px solid rgba(184,134,11,0.4);
+        padding: 6px 18px; border-radius: 20px;
+    }
+
+    .lb-actions {
+        display: flex; gap: 12px; flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .lb-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.68rem; letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 11px 22px; min-height: 44px;
+        border-radius: 6px; cursor: pointer;
+        transition: all 0.2s; text-decoration: none;
+        font-weight: 600;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .lb-btn-download {
+        background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+        color: #000; border: none;
+        box-shadow: 0 4px 16px rgba(184,134,11,0.4);
+    }
+
+    .lb-btn-download:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(184,134,11,0.55); }
+
+    .lb-btn-close {
+        background: transparent;
+        color: #999; border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .lb-btn-close:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+
+    /* Make QR cards feel clickable */
+    .qr-card { cursor: zoom-in; }
+
+    .qr-img-wrap { cursor: zoom-in; }
+
+    .zoom-hint {
+        font-family: 'Cinzel', serif;
+        font-size: 0.56rem; letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        margin-top: 10px;
+        display: flex; align-items: center;
+        justify-content: center; gap: 6px;
+        transition: color 0.2s;
+    }
+
+    .qr-card:hover .zoom-hint { color: rgba(255,255,255,0.5); }
+
+    .zoom-hint svg { width: 12px; height: 12px; opacity: 0.5; }
+
 </style>
 </head>
 <body>
@@ -572,7 +673,7 @@
                     <span class="qr-badge-dot" style="background:#0066cc;"></span>
                     GCash
                 </div>
-                <div class="qr-img-wrap">
+                <div class="qr-img-wrap" onclick="openLightbox('https://i.imgur.com/p7gkY8D.jpeg', 'GCash QR Code', 'gcash-qr')">
                     <!--
                         🔴 QR CODE A
                         Image: https://i.imgur.com/p7gkY8D.jpeg
@@ -583,29 +684,52 @@
                         class="qr-img">
                 </div>
                 <p class="qr-label">I-scan para mag-send<br>sa pamamagitan ng GCash</p>
+                <div class="zoom-hint">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    I-tap para palakihin
+                </div>
             </div>
 
             <!-- QR Code B -->
             <div class="qr-card">
                 <div class="qr-badge">
-                    <span class="qr-badge-dot" style="background:#6a0dad;"></span>
-                    Maya
+                    <span class="qr-badge-dot" style="background:#d4000f;"></span>
+                    BPI
                 </div>
-                <div class="qr-img-wrap">
+                <div class="qr-img-wrap" onclick="openLightbox('https://i.imgur.com/8tRBDhP.jpeg', 'BPI QR Code', 'bpi-qr')">
                     <!--
                         🔴 QR CODE B
                         Image: https://i.imgur.com/8tRBDhP.jpeg
                     -->
                     <img
                         src="https://i.imgur.com/8tRBDhP.jpeg"
-                        alt="Maya QR Code"
+                        alt="BPI QR Code"
                         class="qr-img">
                 </div>
-                <p class="qr-label">I-scan para mag-send<br>sa pamamagitan ng Maya</p>
+                <p class="qr-label">I-scan para mag-send<br>sa pamamagitan ng BPI</p>
+                <div class="zoom-hint">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    I-tap para palakihin
+                </div>
             </div>
 
         </div>
     </section>
+
+
+    <!-- ===== QR LIGHTBOX ===== -->
+    <div id="qrLightbox" onclick="closeLightbox(event)">
+        <span class="lb-badge" id="lbBadge">QR Code</span>
+        <div class="lb-img-wrap">
+            <img id="lbImg" src="" alt="QR Code">
+        </div>
+        <div class="lb-actions">
+            <a id="lbDownload" href="" download="qr-code.jpeg" class="lb-btn lb-btn-download">
+                ⬇ I-download ang QR
+            </a>
+            <button class="lb-btn lb-btn-close" onclick="closeLightbox()">✕ Isara</button>
+        </div>
+    </div>
 
     <!-- ===== THANKS STRIP ===== -->
     <div class="thanks-strip">
@@ -636,6 +760,28 @@ mobileNav.querySelectorAll('a').forEach(function(a) {
         mobileNav.classList.remove('open');
     });
 });
+
+// ===== QR LIGHTBOX =====
+function openLightbox(src, label, filename) {
+    document.getElementById('lbImg').src        = src;
+    document.getElementById('lbBadge').textContent = label;
+    document.getElementById('lbDownload').href     = src;
+    document.getElementById('lbDownload').download  = filename + '.jpeg';
+    document.getElementById('qrLightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+    if (event && event.target.closest && event.target.closest('.lb-img-wrap')) return;
+    if (event && event.target.id === 'lbDownload') return;
+    document.getElementById('qrLightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+
 </script>
 
 </body>
