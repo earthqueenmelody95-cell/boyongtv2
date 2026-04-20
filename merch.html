@@ -332,6 +332,106 @@
         .product img { height: 130px; }
         .product { padding: 10px; }
     }
+
+    /* ===== MERCH QR THUMBNAILS ===== */
+    .merch-qr-wrap {
+        display: inline-block;
+        background: white;
+        border-radius: 8px;
+        padding: 6px;
+        cursor: zoom-in;
+        transition: box-shadow 0.2s, transform 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .merch-qr-wrap:hover { box-shadow: 0 0 14px rgba(184,134,11,0.5); transform: scale(1.03); }
+    .merch-qr-wrap:active { transform: scale(0.97); }
+
+    .merch-qr-img {
+        display: block;
+        width: 100%; max-width: 130px;
+        height: auto; border-radius: 4px;
+    }
+
+    .merch-qr-hint {
+        font-size: 0.55rem; letter-spacing: 1px;
+        color: #888; margin-top: 5px;
+        text-align: center;
+    }
+
+    /* ===== QR LIGHTBOX ===== */
+    #qrLightbox {
+        position: fixed; inset: 0;
+        z-index: 3000;
+        background: rgba(0,0,0,0.95);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.3s ease;
+        padding: 20px;
+        cursor: zoom-out;
+    }
+
+    #qrLightbox.active { opacity: 1; pointer-events: all; }
+
+    #qrLbInner {
+        display: flex; flex-direction: column;
+        align-items: center; gap: 18px;
+        cursor: default;
+    }
+
+    #qrLbBadge {
+        font-family: 'Cinzel', serif;
+        font-size: 0.62rem; letter-spacing: 3px;
+        text-transform: uppercase; color: #d4a017;
+        background: rgba(0,0,0,0.6);
+        border: 1px solid rgba(184,134,11,0.4);
+        padding: 6px 18px; border-radius: 20px;
+    }
+
+    #qrLbImgWrap {
+        background: white;
+        border-radius: 14px; padding: 16px;
+        box-shadow: 0 0 0 1px rgba(184,134,11,0.5), 0 20px 60px rgba(0,0,0,0.9);
+        transform: scale(0.88);
+        transition: transform 0.3s ease;
+    }
+
+    #qrLightbox.active #qrLbImgWrap { transform: scale(1); }
+
+    #qrLbImg {
+        display: block; width: auto; height: auto;
+        max-width: min(340px, 80vw);
+        max-height: 65vh; border-radius: 6px;
+    }
+
+    #qrLbActions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+    .qr-lb-btn {
+        display: inline-flex; align-items: center;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.75rem; font-weight: bold;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 11px 20px; min-height: 46px;
+        border-radius: 6px; cursor: pointer;
+        transition: all 0.2s; text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .qr-lb-dl {
+        background: linear-gradient(135deg, #d4a017, #b8860b);
+        color: #000; border: none;
+        box-shadow: 0 4px 16px rgba(184,134,11,0.4);
+    }
+
+    .qr-lb-dl:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .qr-lb-close {
+        background: transparent; color: #999;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .qr-lb-close:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+
 </style>
 </head>
 <body>
@@ -342,6 +442,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="merch.html" class="active">Merch</a></li>
         <li><a href="episodes.html">Episodes</a></li>
+        <li><a href="support.html">Support Us</a></li>
     </ul>
     <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -352,6 +453,7 @@
     <a href="index.html">Home</a>
     <a href="merch.html" class="active">Merch</a>
     <a href="episodes.html">Episodes</a>
+    <a href="support.html">Support Us</a>
 </div>
 
 <header>
@@ -414,15 +516,50 @@
 
         <h4 style="margin-top:16px; color:#ff6666;">💳 Payment Instructions</h4>
         <p style="font-size:0.9rem; line-height:1.6; color:#ccc; margin-top:8px;">
-            1. Send the exact amount via GCash QR below.<br>
+            1. Send the exact amount via GCash or BPI QR below.<br>
             2. Screenshot your payment receipt.<br>
             3. Email the screenshot + order details to:
         </p>
-        <!-- 🔴 REPLACE WITH YOUR REAL EMAIL -->
-        <strong style="color:#ff6666;">yourstore@email.com</strong>
-        <br><br>
-        <!-- 🔴 REPLACE WITH YOUR GCASH QR IMAGE URL -->
-        <img src="PASTE_FULL_QR_IMAGE_URL_HERE" class="qr" alt="GCash QR Code">
+        <strong style="color:#ff6666; font-size:0.95rem;">KatarunganUniverse@gmail.com</strong>
+
+        <!-- QR CODES -->
+        <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+
+            <!-- GCash QR -->
+            <div style="flex:1; min-width:120px; text-align:center;">
+                <div style="font-size:0.6rem; letter-spacing:2px; color:#d4a017; text-transform:uppercase; margin-bottom:8px;">GCash</div>
+                <div class="merch-qr-wrap" onclick="openQrLightbox('https://i.imgur.com/p7gkY8D.jpeg','GCash QR Code','gcash-qr')"
+                     title="Click to enlarge">
+                    <img src="https://i.imgur.com/p7gkY8D.jpeg" class="merch-qr-img" alt="GCash QR Code">
+                    <div class="merch-qr-hint">🔍 Tap to enlarge</div>
+                </div>
+            </div>
+
+            <!-- BPI QR -->
+            <div style="flex:1; min-width:120px; text-align:center;">
+                <div style="font-size:0.6rem; letter-spacing:2px; color:#d4a017; text-transform:uppercase; margin-bottom:8px;">BPI</div>
+                <div class="merch-qr-wrap" onclick="openQrLightbox('https://i.imgur.com/8tRBDhP.jpeg','BPI QR Code','bpi-qr')"
+                     title="Click to enlarge">
+                    <img src="https://i.imgur.com/8tRBDhP.jpeg" class="merch-qr-img" alt="BPI QR Code">
+                    <div class="merch-qr-hint">🔍 Tap to enlarge</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- QR LIGHTBOX (inside cart drawer context, full screen) -->
+    <div id="qrLightbox" onclick="closeQrLightbox(event)">
+        <div id="qrLbInner">
+            <span id="qrLbBadge"></span>
+            <div id="qrLbImgWrap">
+                <img id="qrLbImg" src="" alt="QR Code">
+            </div>
+            <div id="qrLbActions">
+                <a id="qrLbDownload" href="" download="" target="_blank" rel="noopener" class="qr-lb-btn qr-lb-dl">⬇ I-download</a>
+                <button class="qr-lb-btn qr-lb-close" onclick="closeQrLightbox()">✕ Isara</button>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -450,13 +587,13 @@ const products = [
 
     {
         name:  "Aswang Shirt",
-        price: 599,
+        price: 700,
         image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
     },
 
     {
         name:  "Horror Cap",
-        price: 399,
+        price: 700,
         image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
     }
 
@@ -685,6 +822,29 @@ mobileNav.querySelectorAll('a').forEach(function(a) {
 
 /* ================= INIT ================= */
 loadProducts();
+
+
+/* ================= QR LIGHTBOX ================= */
+function openQrLightbox(src, label, filename) {
+    document.getElementById('qrLbImg').src          = src;
+    document.getElementById('qrLbBadge').textContent = label;
+    document.getElementById('qrLbDownload').href     = src;
+    document.getElementById('qrLbDownload').download = filename + '.jpeg';
+    document.getElementById('qrLightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQrLightbox(event) {
+    if (event && event.target.id === 'qrLbDownload') return;
+    if (event && event.target.closest && event.target.closest('#qrLbInner') &&
+        !event.target.classList.contains('qr-lb-close')) return;
+    document.getElementById('qrLightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeQrLightbox();
+});
 
 </script>
 <footer>&copy; 2025 Katarungan Universe &nbsp;·&nbsp; All Rights Reserved</footer>
