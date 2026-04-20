@@ -432,6 +432,52 @@
 
     .qr-lb-close:hover { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
 
+
+    /* ===== SIZE SELECTOR ===== */
+    .size-selector {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 8px 0 4px;
+    }
+
+    .size-btn {
+        background: #2a2a2a;
+        color: #aaa;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 0;
+        width: 36px; height: 36px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.18s;
+        min-height: unset;
+        margin-top: 0;
+        display: flex; align-items: center; justify-content: center;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .size-btn:hover { background: #3a3a3a; border-color: #888; color: white; }
+
+    .size-btn.selected {
+        background: red;
+        border-color: red;
+        color: white;
+        box-shadow: 0 0 8px rgba(255,0,0,0.5);
+    }
+
+    .size-error {
+        color: #ff6666;
+        font-size: 0.72rem;
+        margin-top: 2px;
+        display: none;
+        text-align: center;
+    }
+
+    .size-error.show { display: block; }
+
 </style>
 </head>
 <body>
@@ -586,13 +632,37 @@
 const products = [
 
     {
-        name:  "Aswang Shirt",
+        name:  "KU Classic Shirt",
         price: 700,
         image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
     },
 
     {
-        name:  "Horror Cap",
+        name:  "KU Horror Tee",
+        price: 700,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    },
+
+    {
+        name:  "KU Oversized Shirt",
+        price: 700,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    },
+
+    {
+        name:  "KU Dark Hoodie",
+        price: 700,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    },
+
+    {
+        name:  "KU Aswang Shirt",
+        price: 700,
+        image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
+    },
+
+    {
+        name:  "KU Collector Shirt",
         price: 700,
         image: "PASTE_FULL_IMAGE_URL_HERE"   // 🔴 Replace with your Imgur/Postimages URL
     }
@@ -601,8 +671,8 @@ const products = [
     🆕 COPY THIS BLOCK TO ADD A NEW ITEM (don't forget the comma!):
 
     ,{
-        name:  "Aswang Hoodie",
-        price: 899,
+        name:  "New Item Name",
+        price: 700,
         image: "PASTE_FULL_IMAGE_URL_HERE"
     }
     */
@@ -620,24 +690,57 @@ let cart = [];
 
 /* ================= RENDER PRODUCTS ================= */
 
+const SIZES = ["XS", "S", "M", "L", "XL"];
+
 function loadProducts() {
     const container = document.getElementById("productList");
     container.innerHTML = "";
 
-    products.forEach(function(product) {
+    products.forEach(function(product, pIndex) {
         const div = document.createElement("div");
         div.className = "product";
+
+        // Build size buttons
+        var sizeBtns = SIZES.map(function(sz) {
+            return "<button class='size-btn' data-size='" + sz + "' data-index='" + pIndex + "' onclick='selectSize(this)'>" + sz + "</button>";
+        }).join("");
+
         div.innerHTML =
             "<img src='" + product.image + "' " +
                 "alt='" + product.name + "' " +
                 "title='🔍 Click image to enlarge' " +
-                "onerror=\"this.src='https://via.placeholder.com/220x180/1a1a1a/red?text=No+Image'\" " +
-                "onclick=\"openLightbox('" + product.image + "', '" + product.name + "')\">" +
+                "onerror="this.src='https://via.placeholder.com/220x180/1a1a1a/red?text=No+Image'" " +
+                "onclick="openLightbox('" + product.image + "', '" + product.name + "')">" +
             "<h3>" + product.name + "</h3>" +
             "<p>₱" + product.price + "</p>" +
-            "<button class='add-btn' onclick=\"addToCart('" + product.name + "', " + product.price + ")\">🛒 Add to Cart</button>";
+            "<div class='size-selector' id='sizes-" + pIndex + "'>" + sizeBtns + "</div>" +
+            "<p class='size-error' id='size-err-" + pIndex + "'>⚠ Please select a size</p>" +
+            "<button class='add-btn' onclick='addToCartSized(" + pIndex + ")' style='width:100%;'>🛒 Add to Cart</button>";
+
         container.appendChild(div);
     });
+}
+
+function selectSize(btn) {
+    var index = btn.getAttribute("data-index");
+    // Deselect others in same product
+    document.querySelectorAll("#sizes-" + index + " .size-btn").forEach(function(b) {
+        b.classList.remove("selected");
+    });
+    btn.classList.add("selected");
+    // Hide error if shown
+    document.getElementById("size-err-" + index).classList.remove("show");
+}
+
+function addToCartSized(pIndex) {
+    var selected = document.querySelector("#sizes-" + pIndex + " .size-btn.selected");
+    if (!selected) {
+        document.getElementById("size-err-" + pIndex).classList.add("show");
+        return;
+    }
+    var size = selected.getAttribute("data-size");
+    var product = products[pIndex];
+    addToCart(product.name, product.price, size);
 }
 
 /* ================= LIGHTBOX ================= */
@@ -670,10 +773,12 @@ function toggleCart() {
 
 /* ================= ADD TO CART ================= */
 
-function addToCart(name, price) {
-    let item = cart.find(function(p) { return p.name === name; });
+function addToCart(name, price, size) {
+    // Each name+size combo is a unique cart line
+    var key = name + " (" + size + ")";
+    let item = cart.find(function(p) { return p.key === key; });
     if (item) { item.quantity++; }
-    else       { cart.push({ name: name, price: price, quantity: 1 }); }
+    else       { cart.push({ key: key, name: name, size: size, price: price, quantity: 1 }); }
 
     updateCart();
 
@@ -709,7 +814,7 @@ function updateCart() {
         const card = document.createElement("div");
         card.className = "cart-item-card";
         card.innerHTML =
-            "<div class='cart-item-name'>" + item.name + "</div>" +
+            "<div class='cart-item-name'>" + item.name + " &nbsp;<span style='background:#cc0000;color:white;font-size:0.65rem;padding:2px 7px;border-radius:3px;font-weight:bold;'>" + item.size + "</span></div>" +
             "<div class='cart-item-price'>₱" + item.price + " each &nbsp;|&nbsp; Line total: ₱" + (item.price * item.quantity) + "</div>" +
             "<div class='cart-item-controls'>" +
                 "<button class='qty-btn' onclick='decreaseQty(" + index + ")'>−</button>" +
@@ -773,14 +878,14 @@ function showSummary() {
     const shipping       = isFreeShipping ? 0 : SHIPPING_FEE;
     const total          = subtotal + shipping;
 
-    let text  = "===== ASWANG MERCH ORDER =====\n\n";
+    let text  = "===== KATARUNGAN UNIVERSE ORDER =====\n\n";
     text += "Customer : " + name + "\n";
     text += "Contact  : " + contact + "\n";
     text += "Address  : " + street + ", " + city + ", " + province + "\n\n";
     text += "Items:\n";
 
     cart.forEach(function(item) {
-        text += "  - " + item.name + " (x" + item.quantity + ") = ₱" + (item.price * item.quantity) + "\n";
+        text += "  - " + item.name + " | Size: " + item.size + " (x" + item.quantity + ") = ₱" + (item.price * item.quantity) + "\n";
     });
 
     text += "\nSubtotal : ₱" + subtotal + "\n";
